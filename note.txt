@@ -20,3 +20,12 @@ networks: Allows containers to communicate with each other on the same network.
 volumes: Mounts your application code from your local machine to the container.
 
 environment: Sets environment variables, especially useful for databases.
+
+to run composer in docker
+
+
+docker-compose run --rm  composer command
+
+Run laravel project in docker.
+
+>docker-compose run --rm composer create-project laravel/laravel . "10.*"

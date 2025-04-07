@@ -35,6 +35,19 @@ services:
       MYSQL_PASSWORD: secret
     networks:
       - laravel
+    ports:
+      - "4306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
 
+
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    networks:
+      - laravel
 networks:
   laravel:
