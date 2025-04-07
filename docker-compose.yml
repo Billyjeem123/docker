@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    container_name: nginx
+    networks:
+      - laravel
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - ./src:/var/www/html
+
+
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: php
+    networks:
+      - laravel
+    volumes:
+      - ./src:/var/www/html
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: dockerdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+    networks:
+      - laravel
+
+networks:
+  laravel:

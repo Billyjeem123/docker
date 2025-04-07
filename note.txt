@@ -1,0 +1,22 @@
+✅ What is an Image in Docker?
+A Docker Image is a read-only, lightweight, standalone template used to create containers.
+
+How Docker Images Work
+Built from a Dockerfile:
+Images are usually created by defining a set of instructions in a file called a Dockerfile.
+
+✅ What is Docker Compose?
+Docker Compose is a tool used to define and run multi-container Docker applications.
+Instead of starting each container manually,
+
+
+🔍 Explanation of the Above File
+version: Specifies the Compose file format version.
+
+services: Lists all containers that make up your application (PHP, Nginx, MySQL in this case).
+
+networks: Allows containers to communicate with each other on the same network.
+
+volumes: Mounts your application code from your local machine to the container.
+
+environment: Sets environment variables, especially useful for databases.
