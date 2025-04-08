@@ -29,3 +29,123 @@ docker-compose run --rm  composer command
 Run laravel project in docker.
 
 >docker-compose run --rm composer create-project laravel/laravel . "10.*"
+
+
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    container_name: nginx_server
+    networks:
+      - laravel
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - php
+      - mysql
+
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: php
+    networks:
+      - laravel
+    volumes:
+      - ./src:/var/www/html
+
+  composer:
+    image: composer:latest
+    container_name: composer
+    networks:
+      - laravel
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html  # Makes sure it runs commands from the app directory
+    entrypoint: [ "composer" ]  # Ensures the container will run composer commands directly
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: dockerdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "4306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - laravel
+
+networks:
+  laravel:
+
+
+
+added command for permssion fixing on php
+
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    container_name: nginx
+    networks:
+      - laravel
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - ./src:/var/www/html
+
+
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: php
+    networks:
+      - laravel
+    volumes:
+      - ./src:/var/www/html
+    command: >
+      sh -c "chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+      && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+      && php-fpm"
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: dockerdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+    networks:
+      - laravel
+    ports:
+      - "4306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    networks:
+      - laravel
+networks:
+  laravel:
