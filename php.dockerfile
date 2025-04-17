@@ -1,27 +1,23 @@
-FROM php:8.2-fpm
+FROM php:8.2-fpm-alpine
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies with apk (Alpine Package Keeper)
+RUN apk add --no-cache \
     libzip-dev \
     zip \
     unzip \
     libpng-dev \
-    libonig-dev \
+    oniguruma-dev \
     libpq-dev \
+    shadow \
     && docker-php-ext-install pdo_mysql zip
 
-# solution to permssion isssue it appears that
-# Create a user with the same UID as your host user (replace 1000 with your host UID)
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-RUN userdel -f www-data &&\
-    if getent group www-data ; then groupdel www-data; fi &&\
-    groupadd -g ${GROUP_ID} www-data &&\
-    useradd -l -u ${USER_ID} -g www-data www-data &&\
-    install -d -m 0755 -o www-data -g www-data /home/www-data &&\
-    chown -R www-data:www-data /var/www
+# Change user/group ID (if needed)
+RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
 
-# Set working directory
+# Create Laravel storage directories with proper permissions
+RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
+    && mkdir -p /var/www/html/storage/logs \
+    && chmod -R 777 /var/www/html/storage
+
+# Set the working directory
 WORKDIR /var/www/html
-
-USER www-data

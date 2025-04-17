@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   nginx:
@@ -6,6 +5,9 @@ services:
       context: .
       dockerfile: nginx.dockerfile
     container_name: nginx
+    depends_on:
+      - php
+      - mysql
     networks:
       - laravel
     ports:
@@ -15,18 +17,21 @@ services:
       - ./src:/var/www/html
 
 
+
   php:
     build:
       context: .
       dockerfile: php.dockerfile
     container_name: php
-    networks:
-      - laravel
     volumes:
       - ./src:/var/www/html
+    networks:
+      - laravel
 
-
-  mysql:
+  mysql: #MySQL healthcheck - Ensures MySQL is fully ready before artisan tries to connect
+    # Explicit environment variables in artisan service - Overrides any .env settings that might be incorrect
+     # Proper service dependency - Artisan waits for MySQL to be healthy
+    # Network isolation - All services share the same Docker network for internal communication
     image: mysql:8.0
     container_name: mysql
     environment:
@@ -40,6 +45,11 @@ services:
       - "4306:3306"
     volumes:
       - ./mysql:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-psecret" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
 
   composer:
@@ -47,8 +57,34 @@ services:
     container_name: composer
     volumes:
       - ./src:/var/www/html
-    working_dir: /var/www/html
+    working_dir: /var/www/html # Makes sure it runs commands from the app directory
+    entrypoint: [ "composer" ]  # Ensures the container will run composer commands directly
+
     networks:
       - laravel
+
+#artisan was built on php docker entry file
+  # running docker-compose run --rm artisan  command was made possible becase ofthe entry point
+  artisan:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: artisan
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: [ "php", "artisan" ]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - laravel
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: dockerdb
+      DB_USERNAME: user
+      DB_PASSWORD: secret
+
 networks:
   laravel:
