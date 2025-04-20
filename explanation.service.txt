@@ -129,3 +129,14 @@ or docker-compose run --rm artisan db:seed.
 
 
 for creating htts: in docker first create the mkcert certiifcate the crete  adirctory to live in c
+
+
+allow for permssion
+
+docker exec -it php chown -R www-data:www-data /var/www/html
+docker exec -it php chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+#predefined user
+docker exec -it php chown -R laravel:laravel /var/www/html
+docker exec -it php chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
