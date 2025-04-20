@@ -140,3 +140,6 @@ docker exec -it php chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/c
 docker exec -it php chown -R laravel:laravel /var/www/html
 docker exec -it php chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+
+# istall php redeis before using redis
+

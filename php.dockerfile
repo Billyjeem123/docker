@@ -19,5 +19,11 @@ RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && mkdir -p /var/www/html/storage/logs \
     && chmod -R 777 /var/www/html/storage
 
+# install and enamble redis
+RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del pcre-dev ${PHPIZE_DEPS}
+
 # Set the working directory
 WORKDIR /var/www/html
