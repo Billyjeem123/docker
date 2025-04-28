@@ -107,19 +107,21 @@ services:
       networks:
         - laravel
 
-  queue-worker:
+  queue:
     build:
       context: .
       dockerfile: php.dockerfile
-    container_name: queue-worker
+    container_name: queue
+    volumes:
+      - ./src:/var/www/html:delegated
     working_dir: /var/www/html
-    entrypoint: [ "php", "artisan", "queue:work", "redis", "--sleep=3", "--tries=3" ]
+    entrypoint: [ "php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=90" ]
     depends_on:
-      - redis
+      - redis  # if you're using Redis for queues
       - mysql
     networks:
       - laravel
-
+    restart: unless-stopped  # ensures it restarts if it fails
 
 networks:
   laravel:

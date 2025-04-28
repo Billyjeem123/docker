@@ -74,7 +74,7 @@ class EmailController extends Controller
             }
 
             // Dispatch job
-            SendBulkEmails::dispatch($emailData);
+            SendBulkEmails::dispatch($emailData)->onQueue('emails');
 
             return response()->json([
                 'status' => 'success',
