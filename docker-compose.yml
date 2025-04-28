@@ -107,5 +107,19 @@ services:
       networks:
         - laravel
 
+  queue-worker:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: queue-worker
+    working_dir: /var/www/html
+    entrypoint: [ "php", "artisan", "queue:work", "redis", "--sleep=3", "--tries=3" ]
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - laravel
+
+
 networks:
   laravel:

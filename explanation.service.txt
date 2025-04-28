@@ -143,3 +143,41 @@ docker exec -it php chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/c
 
 # istall php redeis before using redis
 
+
+This service will process any queued jobs using Redis as the queue driver.
+ The --sleep=3 option makes the worker sleep for 3 seconds before checking for new jobs,
+ and --tries=3 ensures it will retry jobs up to three times in case of failure.
+
+
+
+ Check items in redis use:
+
+ run
+ docker exec -it redis redis-cli
+
+To see all keys stored in Redis:
+
+keys *
+
+To get the value of a specific key:
+
+
+get <key>
+
+Insloect key:
+
+1. Inspect the laravel_database_queues:food K
+
+lrange laravel_database_queues:food 0 -1
+
+lrange laravel_database_queues:default 0 -1
+
+3. Check if the Queue is Empty
+
+llen "laravel_database_queues:default"
+
+#
+run queue docker-compose run --rm artisan queue:work --queue=default  --stop-when-empty
+
+
+

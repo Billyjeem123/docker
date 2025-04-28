@@ -27,3 +27,4 @@ RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \
 
 # Set the working directory
 WORKDIR /var/www/html
+
